@@ -1,27 +1,57 @@
+<img width="390" alt="histolab" src="https://user-images.githubusercontent.com/4196091/84828232-048fcc00-b026-11ea-8caa-5c14bb8565bd.png">
+
+
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
-[![Coverage Status](https://coveralls.io/repos/github/histolab/histolab/badge.svg?branch=master&kill_cache=1)](https://coveralls.io/github/histolab/histolab?branch=master)
-[![Build Status](https://travis-ci.com/histolab/histolab.svg?branch=master)](https://travis-ci.com/histolab/histolab)
-[![Documentation Status](https://readthedocs.org/projects/histolab/badge/?version=latest)](https://histolab.readthedocs.io/en/latest/?badge=latest)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/histolab/histolab.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/histolab/histolab/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/histolab/histolab.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/histolab/histolab/context:python)
-<a href="https://www.code-inspector.com"><img src="https://www.code-inspector.com/project/13419/score/svg?kill_cache=1"></a>
-<a href="https://www.code-inspector.com"><img src="https://www.code-inspector.com/project/13419/status/svg?kill_cache=1"></a>
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![PyPI](https://img.shields.io/pypi/v/histolab)](https://pypi.org/project/histolab/)
-[![GitHub](https://img.shields.io/github/license/histolab/histolab)](https://github.com/histolab/histolab/blob/master/LICENSE.txt)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/histolab)
-![PyPI - Wheel](https://img.shields.io/pypi/wheel/histolab)
+
+<table>
+<tr>
+    <td>Test Status</td>
+    <td>
+        <img src="https://github.com/histolab/histolab/workflows/CI/badge.svg?branch=master">
+        <a href="https://coveralls.io/github/histolab/histolab?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/histolab/histolab/badge.svg?branch=master&kill_cache=1"></a>
+     </td>
+</tr>
+<tr>
+    <td>Code Quality</td>
+    <td>
+        <a href="https://lgtm.com/projects/g/histolab/histolab/alerts/" target="_blank"><img src="https://img.shields.io/lgtm/alerts/g/histolab/histolab.svg?logo=lgtm&logoWidth=18"></a>
+        <a href="https://lgtm.com/projects/g/histolab/histolab/context:python" target="_blank"><img src="https://img.shields.io/lgtm/grade/python/g/histolab/histolab.svg?logo=lgtm&logoWidth=18"></a>
+        <a href="https://www.code-inspector.com" target="_blank"><img src="https://www.code-inspector.com/project/13419/score/svg?kill_cache=1"></a> 
+        <a href="https://www.code-inspector.com" target="_blank"><img src="https://www.code-inspector.com/project/13419/status/svg?kill_cache=1"></a>
+        <a href="https://www.codefactor.io/repository/github/histolab/histolab" target="_blank"><img src="https://www.codefactor.io/repository/github/histolab/histolab/badge"></a>
+        <a href="https://github.com/psf/black" target="_blank"><img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</tr>
+<tr>
+    <td>Version Info</td>
+    <td>
+        <a href="https://pypi.org/project/histolab/" target="_blank"><img src="https://img.shields.io/pypi/v/histolab"></a>
+        <img src="https://img.shields.io/pypi/pyversions/histolab">
+        <img src="https://img.shields.io/pypi/wheel/histolab">
+    </td>
+</tr>
+<tr>
+    <td>License</td>
+    <td>
+        <a href=https://github.com/histolab/histolab/blob/master/LICENSE.txt" target="_blank"><img src="https://img.shields.io/github/license/histolab/histolab"></a>
+    </td>
+</tr>
+<tr>
+    <td>Documentation</td>
+    <td><a href="https://histolab.readthedocs.io/en/latest/" target="_blank"><img src="https://readthedocs.org/projects/histolab/badge/?version=latest"></a>
+</td>
+</tr>
+</table>
+
 
 **Compatibility Details**
 
 | Operating System  | Python version  |
 |-------------------|-----------------|
-|  Linux            | 3.6, 3.7, 3.8 |
-|  MacOs            | 3.6, 3.7, 3.8 |
-|  Windows          | 3.6, 3.7       |
+|  Linux            | <img src=https://img.shields.io/badge/-3.6%20%7C%203.7%20%7C%203.8-blue>|
+|  MacOs            | <img src=https://img.shields.io/badge/-3.6%20%7C%203.7%20%7C%203.8-blue>|
+|  Windows          | <img src=https://img.shields.io/badge/-3.6%20%7C%203.7%20-blue>|
 
-<img width="390" alt="histolab" src="https://user-images.githubusercontent.com/4196091/84828232-048fcc00-b026-11ea-8caa-5c14bb8565bd.png">
-
+---
 
 ## Table of Contents
 

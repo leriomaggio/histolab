@@ -8,6 +8,9 @@ import os
 import shutil
 from typing import Tuple
 
+from requests.exceptions import HTTPError
+
+import PIL
 import openslide
 
 from .. import __version__
@@ -186,7 +189,9 @@ def _fetch(data_filename: str) -> str:
     # available.
     try:
         resolved_path = image_fetcher.fetch(data_filename)
-    except ConnectionError as err:
+    except HTTPError as httperror:
+        raise HTTPError(f"{httperror}")
+    except ConnectionError:  # pragma: no cover
         # If we decide in the future to suppress the underlying 'requests'
         # error, change this to `raise ... from None`. See PEP 3134.
         raise ConnectionError(
@@ -194,7 +199,7 @@ def _fetch(data_filename: str) -> str:
             "connection is available. To avoid this message in the "
             "future, try `histolab.data.download_all()` when you are "
             "connected to the internet."
-        ) from err
+        )
     return resolved_path
 
 
@@ -232,8 +237,8 @@ def _load_svs(filename: str) -> Tuple[openslide.OpenSlide, str]:
     """
     try:
         svs = openslide.open_slide(_fetch(filename))
-    except openslide.OpenSlideError:  # pragma: no cover
-        raise openslide.OpenSlideError(
+    except PIL.UnidentifiedImageError:
+        raise PIL.UnidentifiedImageError(
             "Your wsi has something broken inside, a doctor is needed"
         )
     return svs, _fetch(filename)

@@ -43,16 +43,15 @@ class FiltersComposition:
         if FiltersSubCls:
             instance = super(FiltersComposition, FiltersSubCls).__new__(FiltersSubCls)
             return instance
-        else:
-            raise FilterCompositionError(
-                f"Filters composition for the class {cls_.__name__} is not available"
-            )
+        raise FilterCompositionError(
+            f"Filters composition for the class {cls_.__name__} is not available"
+        )
 
 
 class _SlideFiltersComposition(FiltersComposition):
     @lazyproperty
     def tissue_mask_filters(self) -> imf.Compose:
-        """Return a filters composition to get a binary mask to estimate tissue in a slide.
+        """Filters composition for slide's tissue estimation.
 
         Returns
         -------
@@ -73,7 +72,7 @@ class _SlideFiltersComposition(FiltersComposition):
 class _TileFiltersComposition(FiltersComposition):
     @lazyproperty
     def tissue_mask_filters(self) -> imf.Compose:
-        """Return a filters composition to get a binary mask to estimate tissue in a tile.
+        """Filters composition for tile's tissue estimation.
 
         Returns
         -------

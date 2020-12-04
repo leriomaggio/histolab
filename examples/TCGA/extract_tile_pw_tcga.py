@@ -151,7 +151,11 @@ def split_tiles_patient_wise(
     )
 
     train_df, test_df = train_test_df_patient_wise(
-        tiles_clinical, patient_col, label_col, test_size, seed,
+        tiles_clinical,
+        patient_col,
+        label_col,
+        test_size,
+        seed,
     )
 
     train_df.to_csv(train_csv_path, index=False)
@@ -200,7 +204,10 @@ def main():
         help="Magnification level from which extract the tiles. Default 2.",
     )
     parser.add_argument(
-        "--seed", type=int, default=7, help="Seed for RandomState. Default 7.",
+        "--seed",
+        type=int,
+        default=7,
+        help="Seed for RandomState. Default 7.",
     )
     parser.add_argument(
         "--check_tissue",

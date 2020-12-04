@@ -1,26 +1,30 @@
 # coding: utf-8
 
 import copy
-
 import os
 import sys
-from unittest.mock import patch
 from importlib import reload
-
-import pytest
+from unittest.mock import patch
 
 import openslide
+import PIL
+import pytest
+import numpy as np
+from requests.exceptions import HTTPError
+
+from histolab import __version__ as v
 from histolab.data import (
     _fetch,
     _has_hash,
     _load_svs,
+    _registry,
     cmu_small_region,
     data_dir,
     registry,
 )
 
 from ...fixtures import SVS
-from ...unitutil import function_mock, ANY
+from ...unitutil import ANY, fetch, function_mock
 
 
 def test_data_dir():
@@ -29,10 +33,41 @@ def test_data_dir():
     assert "cmu_small_region.svs" in os.listdir(data_directory)
 
 
+def test_download_file_from_internet():
+    # NOTE: This test will be skipped when internet connection is not available
+    fetch("histolab/kidney.png")
+    kidney_path = _fetch("histolab/kidney.png")
+    kidney_image = np.array(PIL.Image.open(kidney_path))
+
+    assert kidney_image.shape == (537, 809, 4)
+
+
+def test_download_file_from_internet_but_it_is_broken():
+    # NOTE: This test will be skipped when internet connection is not available
+    fetch("histolab/broken.svs")
+    with pytest.raises(PIL.UnidentifiedImageError) as err:
+        _load_svs("histolab/broken.svs")
+
+    assert str(err.value) == "Your wsi has something broken inside, a doctor is needed"
+
+
 def test_cmu_small_region():
     """ Test that "cmu_small_region" svs can be loaded. """
     cmu_small_region_image, path = cmu_small_region()
     assert cmu_small_region_image.dimensions == (2220, 2967)
+
+
+@patch.dict(registry, {"data/cmu_small_region_broken.svs": "bar"}, clear=True)
+@patch.object(_registry, "legacy_datasets", ["data/cmu_small_region_broken.svs"])
+def test_file_url_not_found():
+    data_filename = "data/cmu_small_region_broken.svs"
+    with pytest.raises(HTTPError) as err:
+        _fetch(data_filename)
+
+    assert (
+        str(err.value) == f"404 Client Error: Not Found for url: "
+        f"https://github.com/histolab/histolab/raw/{v}/histolab/{data_filename}"
+    )
 
 
 def test_load_svs(request):

@@ -23,6 +23,7 @@ from functools import lru_cache
 from typing import List, Tuple
 
 import numpy as np
+import PIL
 
 from .exceptions import LevelError
 from .scorer import Scorer
@@ -60,12 +61,47 @@ class Tiler(Protocol):
         np.ndarray
             Extraction mask at thumbnail level
         """
-
         return slide.biggest_tissue_box_mask
 
     @abstractmethod
     def extract(self, slide: Slide):
         raise NotImplementedError
+
+    def locate_tiles(
+        self,
+        slide: Slide,
+        scale_factor: int = 32,
+        alpha: int = 128,
+        outline: str = "red",
+    ) -> PIL.Image.Image:
+        """Draw tile box references on a rescaled version of the slide
+
+        Parameters
+        ----------
+        slide : Slide
+            Slide reference where placing the tiles
+        scale_factor: int
+            Scaling factor for the returned image. Default is 32.
+        alpha: int
+            The alpha level to be applied to the slide thumbnail, default to 128.
+        outline: str
+            The outline color for the tile annotations, default to 'red'.
+
+        Returns
+        -------
+        PIL.Image.Image
+            PIL Image of the slide thumbnail with the extracted tiles outlined
+        """
+        if not os.path.exists(slide.scaled_image_path(scale_factor)):
+            slide.save_scaled_image(scale_factor)
+        tiles_coords = (tc[1] for tc in self._tiles_generator(slide))
+        img = PIL.Image.open(slide.scaled_image_path(scale_factor))
+        img.putalpha(alpha)
+        draw = PIL.ImageDraw.Draw(img)
+        for coords in tiles_coords:
+            rescaled = np.array(scale_coordinates(coords, slide.dimensions, img.size))
+            draw.rectangle(tuple(map(tuple, rescaled.reshape(2, 2))), outline=outline)
+        return img
 
     # ------- implementation helpers -------
 
@@ -88,7 +124,6 @@ class Tiler(Protocol):
             `{prefix}tile_{tiles_counter}_level{level}_{x_ul_wsi}-{y_ul_wsi}-{x_br_wsi}"
             "-{y_br_wsi}{suffix}`
         """
-
         x_ul_wsi, y_ul_wsi, x_br_wsi, y_br_wsi = tile_wsi_coords
         tile_filename = (
             f"{self.prefix}tile_{tiles_counter}_level{self.level}_{x_ul_wsi}-{y_ul_wsi}"
@@ -96,6 +131,9 @@ class Tiler(Protocol):
         )
 
         return tile_filename
+
+    def _tiles_generator(self, slide: Slide) -> Tuple[Tile, CoordinatePair]:
+        raise NotImplementedError
 
 
 class GridTiler(Tiler):
@@ -151,7 +189,7 @@ class GridTiler(Tiler):
                 f"{len(slide.levels)}"
             )
 
-        grid_tiles = self._grid_tiles_generator(slide)
+        grid_tiles = self._tiles_generator(slide)
 
         tiles_counter = 0
 
@@ -256,7 +294,7 @@ class GridTiler(Tiler):
                 bbox_coordinates, slide
             )
 
-    def _grid_tiles_generator(self, slide: Slide) -> Tuple[Tile, CoordinatePair]:
+    def _tiles_generator(self, slide: Slide) -> Tuple[Tile, CoordinatePair]:
         """Generator of tiles arranged in a grid.
 
         Parameters
@@ -271,7 +309,6 @@ class GridTiler(Tiler):
         CoordinatePair
             Coordinates of the slide at level 0 from which the tile has been extracted
         """
-
         grid_coordinates_generator = self._grid_coordinates_generator(slide)
         for coords in grid_coordinates_generator:
             try:
@@ -374,10 +411,7 @@ class RandomTiler(Tiler):
         slide : Slide
             Slide from which to extract the tiles
         """
-
-        np.random.seed(self.seed)
-
-        random_tiles = self._random_tiles_generator(slide)
+        random_tiles = self._tiles_generator(slide)
 
         tiles_counter = 0
         for tiles_counter, (tile, tile_wsi_coords) in enumerate(random_tiles):
@@ -459,7 +493,7 @@ class RandomTiler(Tiler):
 
         return tile_wsi_coords
 
-    def _random_tiles_generator(self, slide: Slide) -> Tuple[Tile, CoordinatePair]:
+    def _tiles_generator(self, slide: Slide) -> Tuple[Tile, CoordinatePair]:
         """Generate Random Tiles within a slide box.
 
         Stops if:
@@ -478,11 +512,10 @@ class RandomTiler(Tiler):
         coords : CoordinatePair
             The level-0 coordinates of the extracted tile
         """
-
+        np.random.seed(self.seed)
         iteration = valid_tile_counter = 0
 
         while True:
-
             tile_wsi_coords = self._random_tile_coordinates(slide)
             try:
                 tile = slide.extract_tile(tile_wsi_coords, self.level)
@@ -651,7 +684,6 @@ class ScoreTiler(GridTiler):
         filenames : List[str]
             List of the tiles' filename
         """
-
         header = ["filename", "score", "scaled_score"]
         rows = [
             dict(zip(header, values))
@@ -707,12 +739,12 @@ class ScoreTiler(GridTiler):
             List of tuples containing the score and the extraction coordinates for each
             tile. Each tuple represents a tile.
         """
-        if next(self._grid_tiles_generator(slide), None) is None:
+        if next(self._tiles_generator(slide), None) is None:
             raise RuntimeError(
                 "No tiles have been generated. This could happen if `check_tissue=True`"
             )
 
-        grid_tiles = self._grid_tiles_generator(slide)
+        grid_tiles = self._tiles_generator(slide)
         scores = []
 
         for tile, tile_wsi_coords in grid_tiles:

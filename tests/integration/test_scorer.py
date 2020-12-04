@@ -48,7 +48,12 @@ class Describe_Scorers:
     def it_knows_nuclei_score(self, tile_img, expected_score):
         tile = Tile(tile_img, None)
         nuclei_scorer = scorer.NucleiScorer()
+        expected_warning_regex = (
+            r"Input image must be RGB. NOTE: the image will be converted to RGB before"
+            r" HED conversion."
+        )
 
-        score = nuclei_scorer(tile)
+        with pytest.warns(UserWarning, match=expected_warning_regex):
+            score = nuclei_scorer(tile)
 
         assert round(score, 5) == round(expected_score, 5)
